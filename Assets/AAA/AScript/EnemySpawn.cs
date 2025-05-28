@@ -1,0 +1,59 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class EnemySpawn : MonoBehaviour
+{
+    [SerializeField] GameObject normalEnemyPrefab;
+    [SerializeField] GameObject eliteEnemyPrefab;
+    [SerializeField] GameObject waveManager;
+
+    private float timer;
+    public int stop = 1;
+    private int enemyCount, enemyLimit = 5;
+
+    public int nowStage;
+
+    private Vector2 spawnPosition;
+
+    float minTime = 4f, maxTime = 5;
+    float minClamp = 0.5f, maxClamp = 5f;
+    float decreaseRate = 0.5f;
+
+    private void Update()
+    {
+        minTime = Mathf.Max(minClamp, minTime - waveManager.GetComponent<WaveManager>()._wave * decreaseRate);
+        maxTime = Mathf.Max(maxClamp, maxTime - waveManager.GetComponent<WaveManager>()._wave * decreaseRate);
+
+        timer += Time.deltaTime * stop;
+        if (timer >= Random.Range(minTime + 2, maxTime + 2))
+        {
+            enemyCount++;
+            if (enemyCount >= enemyLimit)
+            {
+                enemyLimit += 3;
+                enemyCount = 0;
+                stop = 0;
+            }
+            spawnPosition = RandomSpawnPosition();
+            SpawnMob();
+            timer = 0;
+        }
+
+        Vector2 RandomSpawnPosition()
+        {
+            return new Vector2(Random.Range(-11, 11), 5.5f);
+        }
+    }
+
+    public void SpawnMob()
+    {
+        if (Random.Range(1, 5) == 1)
+        {
+            Instantiate(eliteEnemyPrefab, spawnPosition, Quaternion.identity);
+        }
+        else
+        {
+            Instantiate(normalEnemyPrefab, spawnPosition, Quaternion.identity);
+        }
+    }
+}
