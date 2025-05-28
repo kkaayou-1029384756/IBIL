@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class ItemSelect : MonoBehaviour
 {
-    private GameObject _uiObject;
+    public GameObject _uiObject;
     [SerializeField] private float _fadeDuration = 0.5f;
     [SerializeField] private float _displayDuration = 10f;
     [SerializeField] private TextMeshProUGUI _speedLevelTxt;
     [SerializeField] private TextMeshProUGUI _chargeLevelTxt;
     [SerializeField] private TextMeshProUGUI _rangeLevelTxt;
-
-    [SerializeField] private GameObject _common;
-    [SerializeField] private GameObject _rare;
 
     int speedLevel = 1;
     int chargeLevel = 1;
@@ -38,16 +35,6 @@ public class ItemSelect : MonoBehaviour
 
         _uiObject.SetActive(true);
 
-        if (Random.Range(1, 5) == 1)
-        {
-            _rare.SetActive(true);
-            _common.SetActive(false);
-        }
-        else
-        {
-            _rare.SetActive(false);
-            _common.SetActive(true);
-        }
 
         canvasGroup = _uiObject.GetComponent<CanvasGroup>();
         if (canvasGroup == null)

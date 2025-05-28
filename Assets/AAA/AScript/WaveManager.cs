@@ -27,7 +27,7 @@ public class WaveManager : MonoBehaviour
             _wave++;
             StartCoroutine(waveText.FadeStart(true));
             itemSelect.ShowUI();
-            //enemySpawner.GetComponent<EnemySpawn>().stop = 1;
+            Debug.Log("aa");
         }
     }
 }

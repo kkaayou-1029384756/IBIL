@@ -20,8 +20,8 @@ public class WaveText : MonoBehaviour
 
     private void Update()
     {
-        realWaveText.text = $"Wave : {waveManager._wave}";
-        waveText.text = $"Wave : {waveManager._wave}";
+        realWaveText.text = $"웨이브 : {waveManager._wave}";
+        waveText.text = $"웨이브 : {waveManager._wave}";
         second += Time.deltaTime;
 
         if (isMinute)

@@ -10,7 +10,7 @@ public class EnemySpawn : MonoBehaviour
 
     private Vector2 spawnPosition;
 
-    float minTime = 4f, maxTime = 5f;
+    float minTime = 2.5f, maxTime = 3.5f;
     float minClamp = 0.5f, maxClamp = 5f;
     float decreaseRate = 0.5f;
 
@@ -26,8 +26,8 @@ public class EnemySpawn : MonoBehaviour
 
     private void Update()
     {
-        minTime = Mathf.Max(minClamp, 4f - waveManager.GetComponent<WaveManager>()._wave * decreaseRate);
-        maxTime = Mathf.Max(maxClamp, 5f - waveManager.GetComponent<WaveManager>()._wave * decreaseRate);
+        minTime = Mathf.Max(minClamp, 2f - waveManager.GetComponent<WaveManager>()._wave * decreaseRate);
+        maxTime = Mathf.Max(maxClamp, 3f - waveManager.GetComponent<WaveManager>()._wave * decreaseRate);
 
         timer += Time.deltaTime;
 
