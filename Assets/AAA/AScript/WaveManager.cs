@@ -3,11 +3,11 @@ using UnityEngine;
 public class WaveManager : MonoBehaviour
 {
     [SerializeField] GameObject enemySpawner;
-    [SerializeField] GameObject waveTextUI;
+    [SerializeField] WaveText waveText;
     public int _wave = 1;
     public int _realTime;
     private float timer;
-
+    private int waveTime = 20;
 
     void Update()
     {
@@ -18,11 +18,13 @@ public class WaveManager : MonoBehaviour
             _realTime++;
         }
 
-        if (_realTime >= 20)
+        if (_realTime >= waveTime)
         {
             _realTime = 0;
+            waveTime += 4;
             timer = 0;
             _wave++;
+            StartCoroutine(waveText.FadeStart(true));
             enemySpawner.GetComponent<EnemySpawn>().stop = 1;
         }
     }

@@ -4,7 +4,6 @@ using UnityEngine.InputSystem;
 public class EnemySpawn : MonoBehaviour
 {
     [SerializeField] GameObject normalEnemyPrefab;
-    [SerializeField] GameObject eliteEnemyPrefab;
     [SerializeField] GameObject waveManager;
 
     private float timer;
@@ -25,7 +24,7 @@ public class EnemySpawn : MonoBehaviour
         maxTime = Mathf.Max(maxClamp, maxTime - waveManager.GetComponent<WaveManager>()._wave * decreaseRate);
 
         timer += Time.deltaTime * stop;
-        if (timer >= Random.Range(minTime + 2, maxTime + 2))
+        if (timer >= Random.Range(minTime + 1.5f, maxTime + 1.5f))
         {
             enemyCount++;
             if (enemyCount >= enemyLimit)
@@ -47,13 +46,6 @@ public class EnemySpawn : MonoBehaviour
 
     public void SpawnMob()
     {
-        if (Random.Range(1, 5) == 1)
-        {
-            Instantiate(eliteEnemyPrefab, spawnPosition, Quaternion.identity);
-        }
-        else
-        {
-            Instantiate(normalEnemyPrefab, spawnPosition, Quaternion.identity);
-        }
+        Instantiate(normalEnemyPrefab, spawnPosition, Quaternion.identity);
     }
 }
