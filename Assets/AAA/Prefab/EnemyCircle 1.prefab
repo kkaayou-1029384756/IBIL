@@ -105,8 +105,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   particlePrefab: {fileID: 8320923800756650658, guid: 3a2860983ff49b44fbf3876b67e211b4, type: 3}
-  pushForce: 20
-  decelerationRate: 2
+  pushForce: 10
+  decelerationRate: 3
 --- !u!114 &4039354409819621362
 MonoBehaviour:
   m_ObjectHideFlags: 0
