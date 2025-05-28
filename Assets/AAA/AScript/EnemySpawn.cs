@@ -62,6 +62,5 @@ public class EnemySpawn : MonoBehaviour
     public void SpawnMob()
     {
         var mob = Instantiate(normalEnemyPrefab, spawnPosition, Quaternion.identity);
-        Debug.Log(mob);
     }
 }

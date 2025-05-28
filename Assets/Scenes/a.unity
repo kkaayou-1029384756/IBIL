@@ -510,9 +510,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f50c480e140c3544b605dbdf8166ff3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  realWaveText: {fileID: 181464322}
+  realWaveText: {fileID: 1356090738}
   timerText: {fileID: 1599173614}
-  waveText: {fileID: 1356090738}
+  waveText: {fileID: 181464322}
   spriteRenderer: {fileID: 1356090738}
   waveManager: {fileID: 865458362}
   isMinute: 0
@@ -562,8 +562,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalEnemyPrefab: {fileID: 4269882346347369760, guid: d76cd51587f2f9f428efa96a2e441750, type: 3}
   waveManager: {fileID: 865458360}
-  stop: 1
-  nowStage: 0
 --- !u!1 &865458360
 GameObject:
   m_ObjectHideFlags: 0
@@ -792,7 +790,6 @@ GameObject:
   - component: {fileID: 1356090737}
   - component: {fileID: 1356090739}
   - component: {fileID: 1356090738}
-  - component: {fileID: 1356090740}
   m_Layer: 5
   m_Name: RealWave
   m_TagString: Untagged
@@ -918,24 +915,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1356090736}
   m_CullTransparentMesh: 1
---- !u!114 &1356090740
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1356090736}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f50c480e140c3544b605dbdf8166ff3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  realWaveText: {fileID: 181464322}
-  timerText: {fileID: 1599173614}
-  waveText: {fileID: 1356090738}
-  spriteRenderer: {fileID: 1356090738}
-  waveManager: {fileID: 865458362}
-  isMinute: 0
 --- !u!1 &1443848441
 GameObject:
   m_ObjectHideFlags: 0
@@ -1113,6 +1092,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particlePrefab: {fileID: 8320923800756650658, guid: 19fe59fa190132a46b3197d35aaa7208, type: 3}
   gameOverUI: {fileID: 1129846657}
+  Hearts: []
   maxHp: 5
   currentHp: 0
 --- !u!1 &1599173612

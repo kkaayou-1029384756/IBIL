@@ -20,18 +20,24 @@ public class WaveText : MonoBehaviour
 
     private void Update()
     {
+        realWaveText.text = $"Wave : {waveManager._wave}";
         waveText.text = $"Wave : {waveManager._wave}";
         second += Time.deltaTime;
 
         if (isMinute)
         {
-            timerText.text = $"{minute}:{(int)second}";
-            realWaveText.text = $"Wave : {waveManager._wave}";
+            timerText.text = $"{minute} : {(int)second}";
         }
         else
         {
-            timerText.text = $"{(int)second}";
-            realWaveText.text = $"Wave : {waveManager._wave}";
+            if(second >= 10)
+            {
+                timerText.text = $"0 : {(int)second}";
+            }
+            else
+            {
+                timerText.text = $"0 : 0{(int)second}";
+            }
         }
         if (second >= 60f)
         {
@@ -45,7 +51,7 @@ public class WaveText : MonoBehaviour
     {
         if (fade)
         {
-            waveText.gameObject.SetActive(true);
+            realWaveText.gameObject.SetActive(true);
             float alpha = 0;
             while (alpha <= 1)
             {
@@ -58,7 +64,7 @@ public class WaveText : MonoBehaviour
         }
         else
         {
-            waveText.gameObject.SetActive(false);
+            realWaveText.gameObject.SetActive(false);
             float alpha = 1;
             while (alpha >= 0)
             {
