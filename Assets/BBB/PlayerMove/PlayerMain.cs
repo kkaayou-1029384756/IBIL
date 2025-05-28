@@ -14,9 +14,9 @@ public class PlayerMain : MonoBehaviour
     public float _chargeSpeed = 2f;
 
     [Header("Launch Settings")]
-    public float _launchDistance = 5f;      // 튀어나가는 거리 (고정)
-    [SerializeField] float _launchSpeed = 20f;        // 튀어나가는 속도
-    [SerializeField] float _returnSpeed = 10f;        // 돌아오는 속도
+    public float _launchDistance = 5f;
+    [SerializeField] float _launchSpeed = 20f;
+    [SerializeField] float _returnSpeed = 10f;
 
     int _currentIndex = 0;
     bool _isMoving = false;
@@ -49,53 +49,39 @@ public class PlayerMain : MonoBehaviour
             return;
         }
 
-        HandleInput();
-        MovePlayer();
         LookAtMouse();
         HandleCharging();
-    }
 
-    void HandleInput()
-    {
-        if (_isMoving) return;
-
-        if (Input.GetKey(KeyCode.A))
+        // 방향키 입력을 코루틴으로 처리해 한 칸씩 순차 이동
+        if (!_isMoving)
         {
-            if (_currentIndex > 0)
-            {
-                _currentIndex--;
-                SetTargetPosition(_movePoints[_currentIndex].position);
-            }
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            if (_currentIndex < _movePoints.Length - 1)
-            {
-                _currentIndex++;
-                SetTargetPosition(_movePoints[_currentIndex].position);
-            }
-        }
-
-        if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
-        {
-            int nearest = FindNearestPointIndex();
-            _currentIndex = nearest;
-            SetTargetPosition(_movePoints[_currentIndex].position);
+            if (Input.GetKey(KeyCode.A))
+                StartCoroutine(MoveStep(-1));
+            else if (Input.GetKey(KeyCode.D))
+                StartCoroutine(MoveStep(1));
         }
     }
 
-    void MovePlayer()
+    IEnumerator MoveStep(int direction)
     {
-        if (Vector3.Distance(transform.position, _targetPosition) > 0.01f)
+        _isMoving = true;
+
+        int nextIndex = _currentIndex + direction;
+        if (nextIndex >= 0 && nextIndex < _movePoints.Length)
         {
-            _isMoving = true;
-            transform.position = Vector3.MoveTowards(transform.position, _targetPosition, _moveSpeed * Time.deltaTime);
-        }
-        else
-        {
+            _currentIndex = nextIndex;
+            _targetPosition = _movePoints[_currentIndex].position;
+
+            while (Vector3.Distance(transform.position, _targetPosition) > 0.01f)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, _targetPosition, _moveSpeed * Time.deltaTime);
+                yield return null;
+            }
+
             transform.position = _targetPosition;
-            _isMoving = false;
         }
+
+        _isMoving = false;
     }
 
     void LookAtMouse()
@@ -146,26 +132,26 @@ public class PlayerMain : MonoBehaviour
         float launchStartDistance = Vector3.Distance(transform.position, launchTarget);
         float returnStartDistance = Vector3.Distance(launchTarget, _returnPosition);
 
-        float _minLaunchSpeed = 5f;  // 가까워질수록 속도 줄어드는 최소 속도
-        float _minReturnSpeed = 2f;  // 돌아올 때 초반 느린 최소 속도
+        float _minLaunchSpeed = 5f;
+        float _minReturnSpeed = 2f;
 
-        // 빠르게 튀어나가기 → 가까워질수록 감속
+        // 튀어나갈 때 감속
         while (Vector3.Distance(transform.position, launchTarget) > 0.05f)
         {
             float currentDistance = Vector3.Distance(transform.position, launchTarget);
-            float t = currentDistance / launchStartDistance; // 1 → 0으로 변함
-            float speed = Mathf.Lerp(_minLaunchSpeed, _launchSpeed, t); // 멀면 빠름, 가까우면 느림
+            float t = currentDistance / launchStartDistance;
+            float speed = Mathf.Lerp(_minLaunchSpeed, _launchSpeed, t);
             transform.position = Vector3.MoveTowards(transform.position, launchTarget, speed * Time.deltaTime);
             yield return null;
         }
 
-        yield return new WaitForSeconds(0.1f); // 찰진 멈춤
+        yield return new WaitForSeconds(0.1f);
 
-        // 되돌아오기 → 처음엔 느리게 출발해서 가까워질수록 빨라짐
+        // 돌아올 때 가속
         while (Vector3.Distance(transform.position, _returnPosition) > 0.05f)
         {
             float currentDistance = Vector3.Distance(transform.position, _returnPosition);
-            float t = 1f - (currentDistance / returnStartDistance); // 0 → 1로 변함
+            float t = 1f - (currentDistance / returnStartDistance);
             float speed = Mathf.Lerp(_minReturnSpeed, _returnSpeed, t);
             transform.position = Vector3.MoveTowards(transform.position, _returnPosition, speed * Time.deltaTime);
             yield return null;
@@ -176,13 +162,6 @@ public class PlayerMain : MonoBehaviour
         if (_chargeSlider != null)
             _chargeSlider.value = 0f;
         _isLaunching = false;
-    }
-
-
-
-    void SetTargetPosition(Vector3 newTarget)
-    {
-        _targetPosition = newTarget;
     }
 
     int FindNearestPointIndex()
