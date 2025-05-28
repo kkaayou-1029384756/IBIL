@@ -19,7 +19,7 @@ public class TowerHP : MonoBehaviour
             //여기서 타워 디짐
             ParticleSystem particleInstance = Instantiate(particlePrefab, transform.position, Quaternion.identity);
             particleInstance.Play();
-            gameOverUI.SetActive(true);
+            StartCoroutine(gameOverUI.GetComponent<GameOver>().Fade());
             Destroy(particleInstance.gameObject, particleInstance.main.duration);
             Destroy(gameObject);
         }
