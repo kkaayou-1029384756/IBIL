@@ -6,15 +6,15 @@ public class PlayerMain : MonoBehaviour
 {
     [Header("Path Movement")]
     [SerializeField] Transform[] _movePoints;
-    [SerializeField] float _moveSpeed = 5f;
+    public float _moveSpeed = 5f;
 
     [Header("Charge Settings")]
     [SerializeField] Slider _chargeSlider;
     [SerializeField] float _maxCharge = 5f;
-    [SerializeField] float _chargeSpeed = 2f;
+    public float _chargeSpeed = 2f;
 
     [Header("Launch Settings")]
-    [SerializeField] float _launchDistance = 5f;      // 튀어나가는 거리 (고정)
+    public float _launchDistance = 5f;      // 튀어나가는 거리 (고정)
     [SerializeField] float _launchSpeed = 20f;        // 튀어나가는 속도
     [SerializeField] float _returnSpeed = 10f;        // 돌아오는 속도
 
@@ -139,24 +139,35 @@ public class PlayerMain : MonoBehaviour
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 dir = (mousePos - transform.position).normalized;
 
-        // 충전한 만큼만 튀어나가게
         float ratio = _chargeAmount / _maxCharge;
         float actualDistance = _launchDistance * ratio;
         Vector3 launchTarget = transform.position + dir * actualDistance;
 
-        // 빠르게 튀어나가기
+        float launchStartDistance = Vector3.Distance(transform.position, launchTarget);
+        float returnStartDistance = Vector3.Distance(launchTarget, _returnPosition);
+
+        float _minLaunchSpeed = 5f;  // 가까워질수록 속도 줄어드는 최소 속도
+        float _minReturnSpeed = 2f;  // 돌아올 때 초반 느린 최소 속도
+
+        // 빠르게 튀어나가기 → 가까워질수록 감속
         while (Vector3.Distance(transform.position, launchTarget) > 0.05f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, launchTarget, _launchSpeed * Time.deltaTime);
+            float currentDistance = Vector3.Distance(transform.position, launchTarget);
+            float t = currentDistance / launchStartDistance; // 1 → 0으로 변함
+            float speed = Mathf.Lerp(_minLaunchSpeed, _launchSpeed, t); // 멀면 빠름, 가까우면 느림
+            transform.position = Vector3.MoveTowards(transform.position, launchTarget, speed * Time.deltaTime);
             yield return null;
         }
 
         yield return new WaitForSeconds(0.1f); // 찰진 멈춤
 
-        // 되돌아오기
+        // 되돌아오기 → 처음엔 느리게 출발해서 가까워질수록 빨라짐
         while (Vector3.Distance(transform.position, _returnPosition) > 0.05f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, _returnPosition, _returnSpeed * Time.deltaTime);
+            float currentDistance = Vector3.Distance(transform.position, _returnPosition);
+            float t = 1f - (currentDistance / returnStartDistance); // 0 → 1로 변함
+            float speed = Mathf.Lerp(_minReturnSpeed, _returnSpeed, t);
+            transform.position = Vector3.MoveTowards(transform.position, _returnPosition, speed * Time.deltaTime);
             yield return null;
         }
 
@@ -166,6 +177,7 @@ public class PlayerMain : MonoBehaviour
             _chargeSlider.value = 0f;
         _isLaunching = false;
     }
+
 
 
     void SetTargetPosition(Vector3 newTarget)
