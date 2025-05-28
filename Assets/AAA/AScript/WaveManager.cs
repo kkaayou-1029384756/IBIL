@@ -25,7 +25,7 @@ public class WaveManager : MonoBehaviour
             timer = 0;
             _wave++;
             StartCoroutine(waveText.FadeStart(true));
-            enemySpawner.GetComponent<EnemySpawn>().stop = 1;
+            //enemySpawner.GetComponent<EnemySpawn>().stop = 1;
         }
     }
 }

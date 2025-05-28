@@ -16,7 +16,7 @@ public class EnemyMovement : MonoBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-        if (!GameObject.FindGameObjectWithTag("Tower"))
+        if (GameObject.FindGameObjectWithTag("Tower") != null)
         {
             _target = GameObject.FindGameObjectWithTag("Tower").transform;
         }

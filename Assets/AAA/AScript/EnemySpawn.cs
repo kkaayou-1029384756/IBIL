@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class EnemySpawn : MonoBehaviour
 {
@@ -7,45 +6,62 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] GameObject waveManager;
 
     private float timer;
-    public int stop = 1;
-    private int enemyCount, enemyLimit = 5;
-
-    public int nowStage;
+    private int enemyCount = 0, enemyLimit = 5;
 
     private Vector2 spawnPosition;
 
-    float minTime = 4f, maxTime = 5;
+    float minTime = 4f, maxTime = 5f;
     float minClamp = 0.5f, maxClamp = 5f;
     float decreaseRate = 0.5f;
 
+    private float currentSpawnDelay;
+
+    private void Start()
+    {
+        SetNextSpawnDelay();
+    }
+
     private void Update()
     {
-        minTime = Mathf.Max(minClamp, minTime - waveManager.GetComponent<WaveManager>()._wave * decreaseRate);
-        maxTime = Mathf.Max(maxClamp, maxTime - waveManager.GetComponent<WaveManager>()._wave * decreaseRate);
+        minTime = Mathf.Max(minClamp, 4f - waveManager.GetComponent<WaveManager>()._wave * decreaseRate);
+        maxTime = Mathf.Max(maxClamp, 5f - waveManager.GetComponent<WaveManager>()._wave * decreaseRate);
 
-        timer += Time.deltaTime * stop;
-        if (timer >= Random.Range(minTime + 1.5f, maxTime + 1.5f))
+        timer += Time.deltaTime;
+
+        if (timer >= currentSpawnDelay)
         {
-            enemyCount++;
-            if (enemyCount >= enemyLimit)
+            if (enemyCount < enemyLimit)
             {
+                spawnPosition = RandomSpawnPosition();
+                SpawnMob();
+                enemyCount++;
+                SetNextSpawnDelay();
+            }
+            else
+            {
+                // 웨이브 끝났다고 가정하고 리셋 또는 증가
                 enemyLimit += 3;
                 enemyCount = 0;
-                stop = 0;
+                SetNextSpawnDelay();
             }
-            spawnPosition = RandomSpawnPosition();
-            SpawnMob();
+
             timer = 0;
         }
+    }
 
-        Vector2 RandomSpawnPosition()
-        {
-            return new Vector2(Random.Range(-11, 11), 5.5f);
-        }
+    private void SetNextSpawnDelay()
+    {
+        currentSpawnDelay = Random.Range(minTime + 1.5f, maxTime + 1.5f);
+    }
+
+    private Vector2 RandomSpawnPosition()
+    {
+        return new Vector2(Random.Range(-11f, 11f), 5.5f);
     }
 
     public void SpawnMob()
     {
-        Instantiate(normalEnemyPrefab, spawnPosition, Quaternion.identity);
+        var mob = Instantiate(normalEnemyPrefab, spawnPosition, Quaternion.identity);
+        Debug.Log(mob);
     }
 }
