@@ -7,6 +7,7 @@ using static UnityEngine.ParticleSystem;
 public class GetEnemyAttack : MonoBehaviour
 {
     [SerializeField] ParticleSystem particlePrefab;
+    SpriteRenderer spriteRenderer;
 
     private EnemyMovement movement;
     private Rigidbody2D rb;
@@ -20,6 +21,7 @@ public class GetEnemyAttack : MonoBehaviour
     {
         movement = GetComponent<EnemyMovement>();
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -28,6 +30,7 @@ public class GetEnemyAttack : MonoBehaviour
 
         if(collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Tower"))
         {
+            spriteRenderer.color = Color.red;
             new WaitForSeconds(2f);
             isPushing = true;
             movement.stop = 0f;  // ¿Ãµø ∏ÿ√ﬂ±‚

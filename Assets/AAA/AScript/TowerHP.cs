@@ -3,6 +3,7 @@ using UnityEngine;
 public class TowerHP : MonoBehaviour
 {
     [SerializeField] ParticleSystem particlePrefab;
+    [SerializeField] GameObject gameOverUI;
 
     public int maxHp;
     public int currentHp;
@@ -18,6 +19,7 @@ public class TowerHP : MonoBehaviour
             //여기서 타워 디짐
             ParticleSystem particleInstance = Instantiate(particlePrefab, transform.position, Quaternion.identity);
             particleInstance.Play();
+            gameOverUI.SetActive(true);
             Destroy(particleInstance.gameObject, particleInstance.main.duration);
             Destroy(gameObject);
         }
