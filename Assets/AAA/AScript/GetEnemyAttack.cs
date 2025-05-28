@@ -26,6 +26,21 @@ public class GetEnemyAttack : MonoBehaviour
     {
         if (isPushing) return;
 
+        if(collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Tower"))
+        {
+            new WaitForSeconds(2f);
+            isPushing = true;
+            movement.stop = 0f;  // 이동 멈추기
+
+            Vector2 pushDir = (rb.position - (Vector2)collision.transform.position).normalized;
+
+            // AddForce를 통해 즉시 밀어내기 시작
+            rb.AddForce(pushDir * pushForce, ForceMode2D.Impulse);
+
+            // PushBack 과정 시작
+            StartCoroutine(PushBackGradually(pushDir));
+        }
+
         if (collision.gameObject.CompareTag("Tower"))
         {
             collision.gameObject.GetComponent<TowerHP>().Attack(1);
