@@ -24,8 +24,13 @@ public class PlayerMain : MonoBehaviour
 
     bool _isCharging = false;
     float _chargeAmount = 0f;
-    bool _isLaunching = false;
+
+    enum LaunchState { Idle, Launching, Returning, WaitingToReturn }
+    LaunchState _launchState = LaunchState.Idle;
+
     Vector3 _returnPosition;
+    Vector3 _launchTarget;
+    float _launchRatio;
 
     void Start()
     {
@@ -43,22 +48,28 @@ public class PlayerMain : MonoBehaviour
 
     void Update()
     {
-        if (_isLaunching)
+        LookAtMouse();
+
+        switch (_launchState)
         {
-            LookAtMouse();
-            return;
+            case LaunchState.Launching:
+                HandleLaunching();
+                return;
+
+            case LaunchState.Returning:
+                HandleReturning();
+                return;
+
+            case LaunchState.WaitingToReturn:
+                return;
         }
 
-        LookAtMouse();
         HandleCharging();
 
-        // 방향키 입력을 코루틴으로 처리해 한 칸씩 순차 이동
-        if (!_isMoving)
+        if (!_isMoving && _launchState == LaunchState.Idle)
         {
-            if (Input.GetKey(KeyCode.A))
-                StartCoroutine(MoveStep(-1));
-            else if (Input.GetKey(KeyCode.D))
-                StartCoroutine(MoveStep(1));
+            if (Input.GetKey(KeyCode.A)) StartCoroutine(MoveStep(-1));
+            else if (Input.GetKey(KeyCode.D)) StartCoroutine(MoveStep(1));
         }
     }
 
@@ -111,57 +122,61 @@ public class PlayerMain : MonoBehaviour
         {
             _isCharging = false;
             if (_chargeAmount > 0f)
-            {
-                StartCoroutine(LaunchAndReturn());
-            }
+                PrepareLaunch();
         }
     }
 
-    IEnumerator LaunchAndReturn()
+    void PrepareLaunch()
     {
-        _isLaunching = true;
-        _returnPosition = transform.position;
-
+        _launchRatio = Mathf.Clamp01(_chargeAmount / _maxCharge);
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 dir = (mousePos - transform.position).normalized;
 
-        float ratio = _chargeAmount / _maxCharge;
-        float actualDistance = _launchDistance * ratio;
-        Vector3 launchTarget = transform.position + dir * actualDistance;
+        _launchTarget = transform.position + dir * _launchDistance * _launchRatio;
+        _returnPosition = transform.position;
+        _launchState = LaunchState.Launching;
+    }
 
-        float launchStartDistance = Vector3.Distance(transform.position, launchTarget);
-        float returnStartDistance = Vector3.Distance(launchTarget, _returnPosition);
-
-        float _minLaunchSpeed = 5f;
-        float _minReturnSpeed = 2f;
-
-        // 튀어나갈 때 감속
-        while (Vector3.Distance(transform.position, launchTarget) > 0.05f)
+    void HandleLaunching()
+    {
+        float dist = Vector3.Distance(transform.position, _launchTarget);
+        if (dist < 0.05f)
         {
-            float currentDistance = Vector3.Distance(transform.position, launchTarget);
-            float t = currentDistance / launchStartDistance;
-            float speed = Mathf.Lerp(_minLaunchSpeed, _launchSpeed, t);
-            transform.position = Vector3.MoveTowards(transform.position, launchTarget, speed * Time.deltaTime);
-            yield return null;
+            transform.position = _launchTarget;
+            StartCoroutine(DelayBeforeReturn());
+            _launchState = LaunchState.WaitingToReturn;
         }
+        else
+        {
+            float t = dist / (_launchDistance * _launchRatio);
+            float speed = Mathf.Lerp(5f, _launchSpeed, t);
+            transform.position = Vector3.MoveTowards(transform.position, _launchTarget, speed * Time.deltaTime);
+        }
+    }
 
+    IEnumerator DelayBeforeReturn()
+    {
         yield return new WaitForSeconds(0.1f);
+        _launchState = LaunchState.Returning;
+    }
 
-        // 돌아올 때 가속
-        while (Vector3.Distance(transform.position, _returnPosition) > 0.05f)
+    void HandleReturning()
+    {
+        float dist = Vector3.Distance(transform.position, _returnPosition);
+        if (dist < 0.05f)
         {
-            float currentDistance = Vector3.Distance(transform.position, _returnPosition);
-            float t = 1f - (currentDistance / returnStartDistance);
-            float speed = Mathf.Lerp(_minReturnSpeed, _returnSpeed, t);
-            transform.position = Vector3.MoveTowards(transform.position, _returnPosition, speed * Time.deltaTime);
-            yield return null;
+            transform.position = _returnPosition;
+            _launchState = LaunchState.Idle;
+            _chargeAmount = 0f;
+            if (_chargeSlider != null)
+                _chargeSlider.value = 0f;
         }
-
-        transform.position = _returnPosition;
-        _chargeAmount = 0f;
-        if (_chargeSlider != null)
-            _chargeSlider.value = 0f;
-        _isLaunching = false;
+        else
+        {
+            float t = 1f - (dist / (_launchDistance * _launchRatio));
+            float speed = Mathf.Lerp(2f, _returnSpeed, t);
+            transform.position = Vector3.MoveTowards(transform.position, _returnPosition, speed * Time.deltaTime);
+        }
     }
 
     int FindNearestPointIndex()

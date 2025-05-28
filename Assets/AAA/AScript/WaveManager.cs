@@ -4,6 +4,7 @@ public class WaveManager : MonoBehaviour
 {
     [SerializeField] GameObject enemySpawner;
     [SerializeField] WaveText waveText;
+    [SerializeField] ItemSelect itemSelect;
     public int _wave = 1;
     public int _realTime;
     private float timer;
@@ -25,6 +26,7 @@ public class WaveManager : MonoBehaviour
             timer = 0;
             _wave++;
             StartCoroutine(waveText.FadeStart(true));
+            itemSelect.ShowUI();
             //enemySpawner.GetComponent<EnemySpawn>().stop = 1;
         }
     }
