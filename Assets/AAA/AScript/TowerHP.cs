@@ -1,10 +1,11 @@
+using System.Collections;
 using UnityEngine;
 
 public class TowerHP : MonoBehaviour
 {
     [SerializeField] ParticleSystem particlePrefab;
-    [SerializeField] GameObject gameOverUI;
     [SerializeField] GameObject[] Hearts;
+    [SerializeField] GameObject gameOver;
 
     public int maxHp;
     public int currentHp;
@@ -20,9 +21,9 @@ public class TowerHP : MonoBehaviour
             //여기서 타워 디짐
             ParticleSystem particleInstance = Instantiate(particlePrefab, transform.position, Quaternion.identity);
             particleInstance.Play();
-            new WaitForSeconds(1f);
-            StartCoroutine(gameOverUI.GetComponent<GameOver>().Fade());
             Destroy(particleInstance.gameObject, particleInstance.main.duration);
+            gameOver.SetActive(true);
+            gameOver.GetComponent<GameOver>().Fade();
             Destroy(gameObject);
         }
 

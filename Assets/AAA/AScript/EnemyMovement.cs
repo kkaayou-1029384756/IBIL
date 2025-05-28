@@ -28,6 +28,10 @@ public class EnemyMovement : MonoBehaviour
 
     private void Update()
     {
+        if (GameObject.FindGameObjectWithTag("Tower") == null)
+        {
+            Destroy(gameObject);
+        }
         //바라볼때
         Vector3 direction = _target.position - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;

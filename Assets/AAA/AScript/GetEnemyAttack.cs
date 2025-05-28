@@ -46,7 +46,7 @@ public class GetEnemyAttack : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Tower"))
         {
-            collision.gameObject.GetComponent<TowerHP>().Attack(1);
+            collision.gameObject.GetComponent<TowerHP>().Attack(1)  ;
             isPushing = true;
             movement.stop = 0f;  // ¿Ãµø ∏ÿ√ﬂ±‚
 

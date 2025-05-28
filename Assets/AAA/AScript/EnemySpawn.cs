@@ -18,6 +18,9 @@ public class EnemySpawn : MonoBehaviour
 
     private void Start()
     {
+        spawnPosition = RandomSpawnPosition();
+        SpawnMob();
+        enemyCount++;
         SetNextSpawnDelay();
     }
 

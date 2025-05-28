@@ -8,14 +8,13 @@ public class GameOver : MonoBehaviour
 
     public IEnumerator Fade()
     {
-        float alpha = 1;
-        while (alpha >= 0)
+        float alpha = 0;
+        while (alpha <= 1)
         {
-            alpha -= Time.deltaTime;
+            alpha += Time.deltaTime;
             Color(alpha);
             yield return null;
         }
-        gameOverUI.gameObject.SetActive(false);
     }
 
     private void Color(float alpha)
