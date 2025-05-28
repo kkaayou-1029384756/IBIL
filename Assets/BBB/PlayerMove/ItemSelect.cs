@@ -1,19 +1,36 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class ItemSelect : MonoBehaviour
 {
     [SerializeField] private GameObject _uiObject;
-    [SerializeField] private float _fadeDuration = 0.5f;     // 알파 변경 속도를 조금 빠르게
-    [SerializeField] private float _displayDuration = 10f;   // 보여지는 시간 (게임 시간 기준)
+    [SerializeField] private float _fadeDuration = 0.5f;
+    [SerializeField] private float _displayDuration = 10f;
+    [SerializeField] private TextMeshProUGUI _speedLevelTxt;
+    [SerializeField] private TextMeshProUGUI _chargeLevelTxt;
+    [SerializeField] private TextMeshProUGUI _rangeLevelTxt;
+
+    int speedLevel = 1;
+    int chargeLevel = 1;
+    int rangeLevel = 1;
+
+    [SerializeField] private PlayerMain _playerMain;
+
+    private Coroutine fadeCoroutine;
+    private CanvasGroup canvasGroup;
 
     private void Start()
     {
         ShowUI();
     }
+
     public void ShowUI()
     {
-        StartCoroutine(FadeInOut());
+        if (fadeCoroutine != null)
+            StopCoroutine(fadeCoroutine);
+
+        fadeCoroutine = StartCoroutine(FadeInOut());
     }
 
     private IEnumerator FadeInOut()
@@ -23,12 +40,13 @@ public class ItemSelect : MonoBehaviour
 
         _uiObject.SetActive(true);
 
-        CanvasGroup canvasGroup = _uiObject.GetComponent<CanvasGroup>();
+        canvasGroup = _uiObject.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
             canvasGroup = _uiObject.AddComponent<CanvasGroup>();
 
         canvasGroup.alpha = 0f;
         Time.timeScale = 0f;
+
         float t = 0f;
         while (t < _fadeDuration)
         {
@@ -36,13 +54,20 @@ public class ItemSelect : MonoBehaviour
             canvasGroup.alpha = Mathf.Clamp01(t / _fadeDuration);
             yield return null;
         }
+
         float elapsed = 0f;
         while (elapsed < _displayDuration)
         {
             elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
-        t = 0f;
+
+        yield return StartCoroutine(FadeOutAndDisable());
+    }
+
+    private IEnumerator FadeOutAndDisable()
+    {
+        float t = 0f;
         while (t < _fadeDuration)
         {
             t += Time.unscaledDeltaTime;
@@ -53,5 +78,43 @@ public class ItemSelect : MonoBehaviour
         canvasGroup.alpha = 0f;
         _uiObject.SetActive(false);
         Time.timeScale = 1f;
+        fadeCoroutine = null;
+    }
+
+    //  강제 종료 메서드
+    public void ForceCloseUI()
+    {
+        if (fadeCoroutine != null)
+        {
+            StopCoroutine(fadeCoroutine);
+            fadeCoroutine = null;
+        }
+
+        if (gameObject.activeInHierarchy)
+            StartCoroutine(FadeOutAndDisable());
+    }
+
+    public void UpgradeSpeed()
+    {
+        speedLevel++;
+        _speedLevelTxt.text = "속도: " + speedLevel;
+        _playerMain._moveSpeed += 2;
+        ForceCloseUI(); //  추가
+    }
+
+    public void UpgradeCharge()
+    {
+        chargeLevel++;
+        _chargeLevelTxt.text = "충전: " + chargeLevel;
+        _playerMain._chargeSpeed += 1;
+        ForceCloseUI(); //  추가
+    }
+
+    public void UpgradeRange()
+    {
+        rangeLevel++;
+        _rangeLevelTxt.text = "범위: " + rangeLevel;
+        _playerMain._launchDistance += 2;
+        ForceCloseUI(); //  추가
     }
 }

@@ -6,7 +6,7 @@ public class PlayerMain : MonoBehaviour
 {
     [Header("Path Movement")]
     [SerializeField] Transform[] _movePoints;
-    public float _moveSpeed = 5f;
+    public float _moveSpeed = 3f;
 
     [Header("Charge Settings")]
     [SerializeField] Slider _chargeSlider;
@@ -14,7 +14,7 @@ public class PlayerMain : MonoBehaviour
     public float _chargeSpeed = 2f;
 
     [Header("Launch Settings")]
-    public float _launchDistance = 5f;
+    public float _launchDistance = 4f;
     [SerializeField] float _launchSpeed = 20f;
     [SerializeField] float _returnSpeed = 10f;
 
